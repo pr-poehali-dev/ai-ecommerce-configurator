@@ -54,13 +54,13 @@ export default function Header({ activeSection, onNav }: HeaderProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => onNav('account')}
+          <a
+            href="/admin"
             className="hidden md:flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors uppercase tracking-wider"
           >
-            <Icon name="User" size={15} />
-            <span>Кабинет</span>
-          </button>
+            <Icon name="Settings" size={15} />
+            <span>Админ</span>
+          </a>
 
           <button
             onClick={() => onNav('cart')}
