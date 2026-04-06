@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import Icon from '@/components/ui/icon';
-import { PRODUCTS, CATEGORIES, type Category, type Product } from '@/data/products';
+import { PRODUCTS, CATEGORIES, SOFTWARE_COMPATIBILITY, type Category, type Product } from '@/data/products';
 import { useCartStore } from '@/store/cart';
+
+const SOFTWARE_LIST = Object.keys(SOFTWARE_COMPATIBILITY);
 
 interface CatalogProps {
   onProduct: (product: Product) => void;
@@ -18,11 +20,18 @@ const STOCK_LABEL: Record<string, { label: string; color: string }> = {
 export default function CatalogSection({ onProduct, compareIds, onCompare }: CatalogProps) {
   const [activeCategory, setActiveCategory] = useState<Category | 'all'>('all');
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'name'>('name');
+  const [softwareFilter, setSoftwareFilter] = useState<string[]>([]);
+  const [showSoftwareFilter, setShowSoftwareFilter] = useState(false);
   const addItem = useCartStore(s => s.addItem);
   const [added, setAdded] = useState<string | null>(null);
 
+  const toggleSoftware = (sw: string) => {
+    setSoftwareFilter(prev => prev.includes(sw) ? prev.filter(s => s !== sw) : [...prev, sw]);
+  };
+
   const filtered = PRODUCTS
     .filter(p => activeCategory === 'all' || p.category === activeCategory)
+    .filter(p => softwareFilter.length === 0 || softwareFilter.every(sw => p.software.includes(sw)))
     .sort((a, b) => {
       if (sortBy === 'price_asc') return a.price - b.price;
       if (sortBy === 'price_desc') return b.price - a.price;
@@ -45,8 +54,44 @@ export default function CatalogSection({ onProduct, compareIds, onCompare }: Cat
             <div className="section-label mb-2">Ассортимент</div>
             <h2 className="text-3xl font-bold">Каталог оборудования</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider mr-2">Сортировка:</span>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            {/* Software filter */}
+            <div className="relative">
+              <button
+                onClick={() => setShowSoftwareFilter(v => !v)}
+                className={`flex items-center gap-2 text-xs px-3 py-1.5 border transition-colors ${
+                  softwareFilter.length > 0
+                    ? 'bg-accent text-white border-accent'
+                    : 'border-border text-muted-foreground hover:border-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon name="Filter" size={12} />
+                Совместимость с ПО
+                {softwareFilter.length > 0 && <span className="bg-white text-accent rounded-full w-4 h-4 flex items-center justify-center font-bold text-[10px]">{softwareFilter.length}</span>}
+              </button>
+              {showSoftwareFilter && (
+                <div className="absolute right-0 top-full mt-1 z-20 bg-card border border-border shadow-lg p-3 min-w-[200px]">
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Фильтр по ПО</div>
+                  <div className="space-y-1.5">
+                    {SOFTWARE_LIST.map(sw => (
+                      <label key={sw} className="flex items-center gap-2 cursor-pointer text-xs hover:text-foreground text-muted-foreground">
+                        <div
+                          onClick={() => toggleSoftware(sw)}
+                          className={`w-3.5 h-3.5 border flex items-center justify-center flex-shrink-0 cursor-pointer ${softwareFilter.includes(sw) ? 'bg-accent border-accent' : 'border-border'}`}
+                        >
+                          {softwareFilter.includes(sw) && <Icon name="Check" size={9} className="text-white" />}
+                        </div>
+                        <span onClick={() => toggleSoftware(sw)}>{sw}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {softwareFilter.length > 0 && (
+                    <button onClick={() => setSoftwareFilter([])} className="mt-2 text-[10px] text-muted-foreground hover:text-foreground underline">Сбросить</button>
+                  )}
+                </div>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Сортировка:</span>
             {([
               ['name', 'По названию'],
               ['price_asc', 'Дешевле'],

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAdminStore, type CompatEntry } from '@/store/admin';
+import { useAIStore } from '@/store/ai';
 import type { Product, Category } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,7 @@ function generateId(name: string): string {
 
 export default function Admin() {
   const { products, compatibility, addProduct, updateProduct, deleteProduct, addSoftware, updateSoftware, deleteSoftware } = useAdminStore();
+  const { logs, clearLogs } = useAIStore();
 
   const [productDialog, setProductDialog] = useState<{ open: boolean; mode: 'add' | 'edit'; id?: string; data: Omit<Product, 'id'> }>({
     open: false, mode: 'add', data: { ...EMPTY_PRODUCT },
@@ -163,6 +165,10 @@ export default function Admin() {
               <Icon name="CheckSquare" size={14} />
               Совместимость ПО ({Object.keys(compatibility).length})
             </TabsTrigger>
+            <TabsTrigger value="logs" className="gap-2">
+              <Icon name="Activity" size={14} />
+              Логи ИИ ({logs.length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -259,6 +265,56 @@ export default function Admin() {
                 </div>
               ))}
             </div>
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Логи запросов к ИИ</h2>
+              {logs.length > 0 && (
+                <Button size="sm" variant="outline" onClick={clearLogs} className="gap-2 text-red-500 hover:text-red-600">
+                  <Icon name="Trash2" size={14} />
+                  Очистить логи
+                </Button>
+              )}
+            </div>
+
+            {logs.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Icon name="Activity" size={36} className="mx-auto mb-3 opacity-30" />
+                <p>Запросов к ИИ пока не было</p>
+              </div>
+            ) : (
+              <div className="border border-border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/40 border-b border-border">
+                    <tr>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Запрос</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Итого</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Позиций</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Ответ</th>
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Время</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {logs.map((log, i) => (
+                      <tr key={log.id} className={`border-b border-border last:border-0 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}>
+                        <td className="px-4 py-3 max-w-xs">
+                          <div className="text-xs text-foreground/80 truncate" title={log.query}>{log.query}</div>
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs">{log.total.toLocaleString('ru-RU')} ₽</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">{log.itemCount}</span>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground">{log.responseMs} мс</td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground">
+                          {new Date(log.timestamp).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

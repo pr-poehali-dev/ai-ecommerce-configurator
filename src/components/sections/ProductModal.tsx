@@ -113,6 +113,32 @@ export default function ProductModal({ product, onClose, onCompare, inCompare }:
           <p className="text-sm text-muted-foreground">{product.shortDesc}</p>
         </div>
 
+        {/* Ask AI */}
+        <div className="px-6 py-4 border-b border-border bg-accent/5">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-5 h-5 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-[9px] font-bold text-white">AI</span>
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider">Спросить ИИ об этом товаре</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              `Подходит ли ${product.name} для ${product.software[0] ?? 'моих задач'}?`,
+              `Сравни ${product.name} с аналогами`,
+              `Что можно добавить к ${product.name}?`,
+            ].map((q) => (
+              <a
+                key={q}
+                href={`/?ai=${encodeURIComponent(q)}#configurator`}
+                onClick={onClose}
+                className="text-xs bg-card border border-border hover:border-accent hover:text-accent px-3 py-1.5 transition-colors rounded"
+              >
+                "{q}"
+              </a>
+            ))}
+          </div>
+        </div>
+
         {/* Tabs */}
         <div className="flex border-b border-border">
           {TABS.map(t => (

@@ -55,6 +55,22 @@ export default function Header({ activeSection, onNav }: HeaderProps) {
         {/* Right Actions */}
         <div className="flex items-center gap-4">
           <a
+            href="/configurator"
+            className="hidden md:flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors uppercase tracking-wider"
+          >
+            <Icon name="Cpu" size={15} />
+            <span>Конструктор</span>
+          </a>
+
+          <a
+            href="/account"
+            className="hidden md:flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors uppercase tracking-wider"
+          >
+            <Icon name="User" size={15} />
+            <span>Кабинет</span>
+          </a>
+
+          <a
             href="/admin"
             className="hidden md:flex items-center gap-2 text-xs text-white/60 hover:text-white transition-colors uppercase tracking-wider"
           >

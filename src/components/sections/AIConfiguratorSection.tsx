@@ -2,6 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { PRODUCTS, SOFTWARE_COMPATIBILITY } from '@/data/products';
 import { useCartStore } from '@/store/cart';
+import { useAIStore } from '@/store/ai';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface Message {
   id: string;
@@ -106,6 +116,11 @@ export default function AIConfiguratorSection() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const addItem = useCartStore(s => s.addItem);
   const [addedAll, setAddedAll] = useState<string | null>(null);
+  const { saveConfig, addLog } = useAIStore();
+  const [saveDialog, setSaveDialog] = useState<{ open: boolean; msgId: string; config: AIConfig | null; query: string }>({
+    open: false, msgId: '', config: null, query: '',
+  });
+  const [configName, setConfigName] = useState('');
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -118,9 +133,11 @@ export default function AIConfiguratorSection() {
     setInput('');
     setLoading(true);
 
+    const start = Date.now();
     await new Promise(r => setTimeout(r, 1200));
 
     const config = generateConfig(text);
+    const ms = Date.now() - start;
     const aiMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: 'ai',
@@ -129,6 +146,13 @@ export default function AIConfiguratorSection() {
     };
     setMessages(prev => [...prev, aiMsg]);
     setLoading(false);
+
+    addLog({
+      query: text,
+      responseMs: ms,
+      total: config.total,
+      itemCount: config.workstations.length + (config.nas ? 1 : 0) + (config.server ? 1 : 0) + config.peripherals.length,
+    });
   };
 
   const handleAddAll = (config: AIConfig, msgId: string) => {
@@ -140,7 +164,15 @@ export default function AIConfiguratorSection() {
     setTimeout(() => setAddedAll(null), 2000);
   };
 
+  const handleSaveConfig = () => {
+    if (!saveDialog.config || !configName.trim()) return;
+    saveConfig(configName.trim(), saveDialog.query, saveDialog.config);
+    setSaveDialog(s => ({ ...s, open: false }));
+    setConfigName('');
+  };
+
   return (
+    <>
     <section className="py-16 bg-secondary border-t border-border">
       <div className="max-w-screen-2xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-10">
@@ -287,23 +319,35 @@ export default function AIConfiguratorSection() {
                             )}
 
                             {/* Total + Add all */}
-                            <div className="flex items-center justify-between pt-2 border-t border-border">
-                              <div>
-                                <div className="text-xs text-muted-foreground">Итого конфигурация</div>
-                                <div className="text-xl font-bold font-mono">
-                                  {msg.config.total.toLocaleString('ru-RU')} ₽
+                            <div className="pt-2 border-t border-border space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-xs text-muted-foreground">Итого конфигурация</div>
+                                  <div className="text-xl font-bold font-mono">
+                                    {msg.config.total.toLocaleString('ru-RU')} ₽
+                                  </div>
                                 </div>
+                                <button
+                                  onClick={() => handleAddAll(msg.config!, msg.id)}
+                                  className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all ${
+                                    addedAll === msg.id
+                                      ? 'bg-green-600 text-white'
+                                      : 'btn-accent'
+                                  }`}
+                                >
+                                  <Icon name={addedAll === msg.id ? 'Check' : 'ShoppingCart'} size={14} />
+                                  {addedAll === msg.id ? 'Добавлено в корзину' : 'В корзину'}
+                                </button>
                               </div>
                               <button
-                                onClick={() => handleAddAll(msg.config!, msg.id)}
-                                className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all ${
-                                  addedAll === msg.id
-                                    ? 'bg-green-600 text-white'
-                                    : 'btn-accent'
-                                }`}
+                                onClick={() => {
+                                  const userQ = messages.slice().reverse().find(m => m.role === 'user')?.text ?? '';
+                                  setSaveDialog({ open: true, msgId: msg.id, config: msg.config!, query: userQ });
+                                }}
+                                className="w-full flex items-center justify-center gap-2 py-2 text-xs border border-border text-muted-foreground hover:border-accent hover:text-accent transition-colors"
                               >
-                                <Icon name={addedAll === msg.id ? 'Check' : 'ShoppingCart'} size={14} />
-                                {addedAll === msg.id ? 'Добавлено в корзину' : 'Добавить всё в корзину'}
+                                <Icon name="BookmarkPlus" size={12} />
+                                Сохранить конфигурацию в кабинете
                               </button>
                             </div>
                           </div>
@@ -370,5 +414,27 @@ export default function AIConfiguratorSection() {
         </div>
       </div>
     </section>
+
+    <Dialog open={saveDialog.open} onOpenChange={(v) => setSaveDialog(s => ({ ...s, open: v }))}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Сохранить конфигурацию</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-2 py-2">
+          <Input
+            value={configName}
+            onChange={(e) => setConfigName(e.target.value)}
+            placeholder="Например: Команда 3D-аниматоров"
+            onKeyDown={(e) => e.key === 'Enter' && handleSaveConfig()}
+            autoFocus
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setSaveDialog(s => ({ ...s, open: false }))}>Отмена</Button>
+          <Button onClick={handleSaveConfig} disabled={!configName.trim()}>Сохранить</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
