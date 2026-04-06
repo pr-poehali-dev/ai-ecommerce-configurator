@@ -102,7 +102,7 @@
   }
 
   .product-card {
-    @apply bg-card border border-border hover:border-foreground/30 transition-all duration-200 group cursor-pointer;
+    @apply bg-card border border-border hover:border-foreground/30 transition-all duration-200 cursor-pointer;
   }
 
   .spec-row {
