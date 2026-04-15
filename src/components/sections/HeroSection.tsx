@@ -42,12 +42,8 @@ export default function HeroSection({ onNav }: HeroProps) {
             <div className="text-xs font-mono uppercase tracking-[0.3em] text-accent mb-6">
               B2B / Рабочие станции · NAS · Серверы
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white mb-8">
-              Железо<br />
-              <span className="text-white/30">для тех,</span><br />
-              кто знает<br />
-              <span className="text-accent">что делает.</span>
-            </h1>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tight text-white mb-8">Железо для тех,
+кто знает что делает</h1>
             <p className="text-white/50 text-base leading-relaxed max-w-md mb-10">
               Профессиональные рабочие станции, NAS-хранилища и серверы для студий, архитектурных бюро и инженерных компаний. AI-конфигуратор подберёт оптимальное решение под ваши задачи.
             </p>
