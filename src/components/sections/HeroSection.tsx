@@ -24,7 +24,7 @@ export default function HeroSection({ onNav }: HeroProps) {
       />
 
       {/* Accent vertical line */}
-      <div className="absolute left-0 top-14 bottom-0 w-1 bg-accent" />
+      <div className="absolute left-0 top-14 bottom-0 w-1 bg-transparent" />
 
       <div className="relative flex-1 flex flex-col max-w-screen-2xl mx-auto w-full px-8 md:px-16">
 
