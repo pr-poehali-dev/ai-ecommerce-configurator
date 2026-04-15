@@ -216,7 +216,7 @@ export default function AIConfiguratorSection() {
           <div className="flex-1 flex flex-col">
             <div className="bg-card border border-border flex flex-col" style={{ height: '600px' }}>
               {/* Chat header */}
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-border bg-slate-900">
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-border bg-[#000000]">
                 <div className="w-2 h-2 bg-accent rounded-full" />
                 <span className="text-xs font-mono font-medium text-white uppercase tracking-wider">TECHPRO AI / Конфигуратор</span>
                 <div className="ml-auto flex gap-1.5">
