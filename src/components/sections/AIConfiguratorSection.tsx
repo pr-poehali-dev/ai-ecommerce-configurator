@@ -179,7 +179,7 @@ export default function AIConfiguratorSection() {
           {/* Left: Info */}
           <div className="lg:w-72 flex-shrink-0">
             <div className="section-label mb-3">Интеллектуальный подбор</div>
-            <h2 className="text-3xl font-bold mb-4">AI<br />Конфигу<br />ратор</h2>
+            <h2 className="text-3xl font-bold mb-4">AI Конфигуратор</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               Опишите задачи в свободной форме — система проанализирует требования и подберёт рабочие станции, NAS и серверы с обоснованием каждого выбора.
             </p>
