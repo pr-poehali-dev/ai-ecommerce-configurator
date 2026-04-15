@@ -19,7 +19,7 @@ export default function Header({ activeSection, onNav }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-foreground text-primary-foreground">
+    <header className="fixed top-0 left-0 right-0 z-50 text-primary-foreground bg-slate-900">
       <div className="flex items-center justify-between px-6 h-14 max-w-screen-2xl mx-auto">
         {/* Logo */}
         <button

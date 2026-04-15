@@ -16,7 +16,7 @@ const CERTS = [
 
 export default function ContactsSection() {
   return (
-    <section className="py-16 bg-foreground text-primary-foreground border-t border-white/10">
+    <section className="py-16 text-primary-foreground border-t border-white/10 bg-slate-900">
       <div className="max-w-screen-2xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           {/* Left */}

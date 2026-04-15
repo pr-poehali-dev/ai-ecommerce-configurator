@@ -16,7 +16,7 @@ export default function HeroSection({ onNav }: HeroProps) {
     <section className="pt-14 min-h-screen flex flex-col bg-foreground text-primary-foreground relative overflow-hidden">
       {/* Grid dots bg */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.04] bg-blue-500"
         style={{
           backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
           backgroundSize: '28px 28px',
@@ -26,7 +26,7 @@ export default function HeroSection({ onNav }: HeroProps) {
       {/* Accent vertical line */}
       <div className="absolute left-0 top-14 bottom-0 w-1 bg-transparent" />
 
-      <div className="relative flex-1 flex flex-col max-w-screen-2xl mx-auto w-full px-8 md:px-16">
+      <div className="relative flex-1 flex flex-col max-w-screen-2xl mx-auto w-full px-8 md:px-16 bg-transparent">
 
         {/* Top meta row */}
         <div className="flex items-center gap-6 pt-16 pb-8 border-b border-white/10">
